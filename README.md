@@ -1,98 +1,106 @@
-# CIS Windows Server 2022 Hardening Scripts
+# CIS IIS Hardening
 
-This repository contains PowerShell scripts for implementing CIS (Center for Internet Security) hardening on Windows Server 2022 while maintaining RDP connectivity.
+A focused collection of scripts and tools for hardening Internet Information Services (IIS) according to CIS (Center for Internet Security) benchmarks and security best practices.
 
-## Contents
+## 🎯 Purpose
 
-- **Final-CIS-Hardening-Script.ps1**: **RECOMMENDED** - Streamlined script that modifies CIS policies and prepares for reboot
-- **Post-Reboot-Commands.ps1**: Commands to run after reboot to complete the hardening process
-- **CIS-Hardening-RDP-Fix.ps1**: Original all-in-one script that applies CIS Level 1 security baseline while ensuring RDP access remains functional
-- **All-In-One-CIS-Hardening.ps1**: Comprehensive script with automatic downloads and full verification
+This repository provides automated IIS hardening solutions, ensuring compliance with security best practices while maintaining operational functionality for web applications.
 
-## Features
+## 📁 Repository Structure
 
-### CIS Hardening
-- Applies Microsoft Security Level 1 baseline policies
-- Implements security configurations from CIS benchmarks
-- Uses LGPO (Local Group Policy Object) for policy management
+```
+├── IIS-Hardening-Scripts/     # PowerShell scripts for IIS hardening
+├── Documentation/             # Detailed guides and references
+└── Tools/                     # Utility tools and analyzers
+```
 
-### RDP Connectivity Fixes
-- Enables RDP connections (`fDenyTSConnections` = 0)
-- Allows password saving for RDP sessions
-- Enables protected credentials delegation
-- Configures proper user rights for Remote Desktop Users
+## 🚀 Quick Start
 
-### Automated Process
-- Fixes folder permissions automatically
-- Modifies GPO source files with RDP-friendly settings
-- Resets local policy to defaults
-- Includes automatic reboot for policy application
-
-## Prerequisites
-
-- Windows Server 2022
-- LGPO.exe (Local Group Policy Object utility)
-- CIS Server 2022 Standalone v1.0.0 GPO backup files
+### Prerequisites
+- Windows Server 2019/2022 with IIS installed
+- PowerShell 5.1 or later
 - Administrative privileges
+- Internet connectivity for downloading tools
 
-## Quick Start (Recommended)
+### Basic Usage
 
-1. **Prepare the server:**
-   - Create `C:\CIS` folder
-   - Extract `Server2022StandAlonev1.0.0.zip` into `C:\CIS\`
-   - Place `LGPO.exe` in `C:\CIS\`
-   - Create CISADMIN user and add to Administrators and Remote Desktop Users groups
+1. **Clone the repository:**
+   ```powershell
+   git clone https://github.com/spittard/cis-iis-server-hardening.git
+   cd cis-iis-server-hardening
+   ```
 
 2. **Run the main hardening script:**
    ```powershell
-   .\Final-CIS-Hardening-Script.ps1
+   .\IIS-Hardening-Scripts\CIS-IIS-Hardening.ps1
    ```
-   The server will reboot automatically.
 
-3. **After reboot, reconnect with AWS Session Manager and run:**
+3. **Apply additional IIS security policies:**
    ```powershell
-   .\Post-Reboot-Commands.ps1
+   .\IIS-Hardening-Scripts\Apply-IIS-Policies.ps1
    ```
 
-## Alternative Usage
+## 🔧 Features
 
-For the original comprehensive script:
-1. Ensure LGPO.exe is available at `C:\CIS\LGPO.exe`
-2. Place CIS GPO backup files in `C:\CIS\Server2022StandAlonev1.0.0\`
-3. Run the script as Administrator:
-   ```powershell
-   .\CIS-Hardening-RDP-Fix.ps1
-   ```
-4. The server will reboot automatically after policy application
-5. Reconnect via AWS Session Manager after reboot
+### IIS-Specific Hardening
+- **Security Headers**: Configure security headers for all IIS sites
+- **SSL/TLS Configuration**: Enforce strong encryption protocols
+- **Request Filtering**: Implement comprehensive request filtering rules
+- **Authentication**: Configure secure authentication methods
+- **Logging**: Enhanced logging and monitoring configuration
 
-## File Structure
+### IIS Security Configuration
+- **SSL/TLS Configuration**: Enforce strong encryption protocols
+- **IP Restrictions**: Configure access controls and IP filtering
+- **Compression Settings**: Optimize performance with secure compression
+- **Caching Policies**: Implement secure caching strategies
 
-```
-├── Server2022StandAlonev1.0.0/     # Original CIS policies (unmodified)
-├── Modified-Server2022StandAlonev1.0.0/
-│   ├── CIS-Hardening-RDP-Fix.ps1   # Main hardening script
-│   ├── MS-L1/                      # Modified Microsoft Level 1 baseline
-│   ├── MS-L2/                      # Modified Microsoft Level 2 baseline
-│   └── [Other modified CIS components...]
-├── LGPO_30/                        # LGPO utility and documentation
-├── Policy Analyzer/                # Policy analysis tools
-├── Tenable-3/                      # Tenable configuration files
-└── TestBackup/                     # Test backup files
-```
+### Automation & Monitoring
+- **Automated Deployment**: One-click hardening deployment
+- **Compliance Checking**: Verify hardening status
+- **Rollback Capabilities**: Safe rollback procedures
+- **Monitoring Scripts**: Continuous security monitoring
 
-## Security Considerations
+## 📋 Security Standards Covered
 
-- This script modifies security policies to balance CIS compliance with operational requirements
-- RDP access is maintained for administrative purposes
-- All changes are logged and can be audited
-- **Original CIS policies are preserved** in `Server2022StandAlonev1.0.0/` for reference and comparison
-- **Modified policies** are in `Modified-Server2022StandAlonev1.0.0/` with RDP-friendly configurations
+- **CIS IIS Benchmark**: Web server security configurations
+- **OWASP Security Guidelines**: Web application security best practices
+- **Microsoft IIS Security Recommendations**: Official Microsoft security guidance
+- **NIST Cybersecurity Framework**: Security controls and guidelines
 
-## Contributing
+## 🛡️ Security Considerations
 
-Feel free to submit issues and enhancement requests!
+- All scripts include safety checks and validation
+- Rollback procedures are provided for all major changes
+- Scripts are designed to be idempotent (safe to run multiple times)
+- Detailed logging of all changes made
+- Compliance verification tools included
 
-## License
+## 📖 Documentation
 
-This project is provided as-is for educational and operational purposes.
+- [Installation Guide](Documentation/Installation.md)
+- [IIS Hardening Reference](Documentation/IIS-Hardening-Reference.md)
+- [Troubleshooting Guide](Documentation/Troubleshooting.md)
+- [Security Compliance Matrix](Documentation/Security-Compliance.md)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see our [Contributing Guidelines](Documentation/Contributing.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+These scripts modify system security settings. Always test in a non-production environment first and ensure you have proper backups before applying to production systems.
+
+## 🔗 Related Resources
+
+- [CIS IIS Benchmark](https://www.cisecurity.org/benchmark/iis) - Official CIS IIS documentation
+- [Microsoft IIS Security](https://docs.microsoft.com/en-us/iis/security/) - Microsoft IIS security guidance
+- [OWASP Web Security](https://owasp.org/www-project-web-security-testing-guide/) - Web application security testing
+
+---
+
+**Note**: This repository is actively maintained and updated to reflect the latest security best practices and CIS benchmark updates.

@@ -52,7 +52,7 @@ if (-not (Test-Administrator)) {
     exit 1
 }
 
-if (-not (Get-WindowsFeature -Name IIS-WebServerRole -ErrorAction SilentlyContinue)) {
+if (-not (Get-WindowsFeature -Name Web-Server -ErrorAction SilentlyContinue | Where-Object {$_.InstallState -eq "Installed"})) {
     Write-Log "IIS is not installed on this server" "ERROR"
     exit 1
 }
@@ -405,6 +405,148 @@ function Set-IISDetailedErrors {
     }
 }
 
+function Set-IISServerHeaderRemoval {
+    Write-Log "Removing server header - CIS Level 1" "INFO"
+    
+    if (-not $WhatIf) {
+        try {
+            # CIS Level 1: Remove server header to prevent information disclosure
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/security/requestFiltering /removeServerHeader:true /commit:apphost
+            
+            Write-Log "Server header removal configured successfully" "INFO"
+        }
+        catch {
+            Write-Log "Failed to configure server header removal: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    else {
+        Write-Log "Would configure server header removal" "INFO"
+    }
+}
+
+function Set-IISDefaultDocuments {
+    Write-Log "Configuring default documents - CIS Level 1" "INFO"
+    
+    if (-not $WhatIf) {
+        try {
+            # CIS Level 1: Configure default documents securely
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/defaultDocument /enabled:true /commit:apphost
+            
+            # Remove potentially dangerous default documents
+            $DangerousDocs = @("iisstart.htm", "default.aspx", "index.aspx")
+            foreach ($Doc in $DangerousDocs) {
+                try {
+                    & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/defaultDocument /-"[file='$Doc']" /commit:apphost
+                }
+                catch {
+                    # Document may not exist, continue
+                }
+            }
+            
+            Write-Log "Default documents configured successfully" "INFO"
+        }
+        catch {
+            Write-Log "Failed to configure default documents: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    else {
+        Write-Log "Would configure default documents" "INFO"
+    }
+}
+
+function Set-IISHTTPRedirection {
+    Write-Log "Configuring HTTP to HTTPS redirection - CIS Level 1" "INFO"
+    
+    if (-not $WhatIf) {
+        try {
+            # CIS Level 1: Configure HTTP to HTTPS redirection
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/httpRedirect /enabled:true /commit:apphost
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/httpRedirect /destination:"https://$env:COMPUTERNAME" /commit:apphost
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/httpRedirect /exactDestination:true /commit:apphost
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/httpRedirect /httpResponseStatus:"Permanent" /commit:apphost
+            
+            Write-Log "HTTP to HTTPS redirection configured successfully" "INFO"
+        }
+        catch {
+            Write-Log "Failed to configure HTTP redirection: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    else {
+        Write-Log "Would configure HTTP to HTTPS redirection" "INFO"
+    }
+}
+
+function Set-IISHTTPMethods {
+    Write-Log "Configuring HTTP methods - CIS Level 1" "INFO"
+    
+    if (-not $WhatIf) {
+        try {
+            # CIS Level 1: Restrict HTTP methods to only necessary ones
+            $AllowedMethods = @("GET", "POST", "HEAD", "OPTIONS")
+            $RestrictedMethods = @("PUT", "DELETE", "PATCH", "TRACE", "CONNECT")
+            
+            # Allow only necessary methods
+            foreach ($Method in $AllowedMethods) {
+                & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/security/requestFiltering /+"verbs.[verb='$Method',allowed='true']" /commit:apphost
+            }
+            
+            # Explicitly deny dangerous methods
+            foreach ($Method in $RestrictedMethods) {
+                & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.webServer/security/requestFiltering /+"verbs.[verb='$Method',allowed='false']" /commit:apphost
+            }
+            
+            Write-Log "HTTP methods configured successfully" "INFO"
+        }
+        catch {
+            Write-Log "Failed to configure HTTP methods: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    else {
+        Write-Log "Would configure HTTP methods" "INFO"
+    }
+}
+
+function Set-IISCookieSecurity {
+    Write-Log "Configuring cookie security - CIS Level 1" "INFO"
+    
+    if (-not $WhatIf) {
+        try {
+            # CIS Level 1: Configure secure cookie attributes
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpCookies /httpOnlyCookies:true /commit:apphost
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpCookies /requireSSL:true /commit:apphost
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpCookies /sameSite:"Strict" /commit:apphost
+            
+            Write-Log "Cookie security configured successfully" "INFO"
+        }
+        catch {
+            Write-Log "Failed to configure cookie security: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    else {
+        Write-Log "Would configure cookie security" "INFO"
+    }
+}
+
+function Set-IISRequestValidation {
+    Write-Log "Configuring request validation - CIS Level 1" "INFO"
+    
+    if (-not $WhatIf) {
+        try {
+            # CIS Level 1: Enable request validation
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/pages /validateRequest:true /commit:apphost
+            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpRuntime /requestValidationMode:"4.5" /commit:apphost
+            
+            Write-Log "Request validation configured successfully" "INFO"
+        }
+        catch {
+            Write-Log "Failed to configure request validation: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    else {
+        Write-Log "Would configure request validation" "INFO"
+    }
+}
+
 # =============================================================================
 # IIS-Specific Security Functions
 # =============================================================================
@@ -455,6 +597,14 @@ try {
     Set-IISAdvancedLogging
     Set-IISETWLogging
     Set-IISDetailedErrors
+    
+    # Apply additional CIS Level 1 security settings
+    Set-IISServerHeaderRemoval
+    Set-IISDefaultDocuments
+    Set-IISHTTPRedirection
+    Set-IISHTTPMethods
+    Set-IISCookieSecurity
+    Set-IISRequestValidation
     
     # Apply IIS-specific security settings
     Set-IISFirewallRules

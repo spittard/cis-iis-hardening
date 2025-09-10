@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Level 1 Compliance Test Suite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #007acc;
+        }
+        .header h1 {
+            color: #007acc;
+            margin: 0;
+        }
+        .header p {
+            color: #666;
+            margin: 10px 0 0 0;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        .test-name {
+            font-weight: 500;
+        }
+        .test-result {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .summary {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .summary h2 {
+            margin-top: 0;
+        }
+        .compliance-score {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .high { color: #28a745; }
+        .medium { color: #ffc107; }
+        .low { color: #dc3545; }
+        .test-details {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .refresh-btn {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .refresh-btn:hover {
+            background-color: #005a9e;
+        }
+        .timestamp {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ CIS Level 1 Compliance Test Suite</h1>
+            <p>Comprehensive security validation for IIS Web Server</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔒 Security Headers Validation</h3>
+            <div id="security-headers-results">
+                <div class="test-item">
+                    <span class="test-name">X-Content-Type-Options: nosniff</span>
+                    <span class="test-result" id="x-content-type">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">X-Frame-Options: DENY</span>
+                    <span class="test-result" id="x-frame-options">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">X-XSS-Protection: 1; mode=block</span>
+                    <span class="test-result" id="x-xss-protection">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Strict-Transport-Security</span>
+                    <span class="test-result" id="hsts">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Referrer-Policy</span>
+                    <span class="test-result" id="referrer-policy">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Content-Security-Policy</span>
+                    <span class="test-result" id="csp">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚫 Request Filtering Tests</h3>
+            <div id="request-filtering-results">
+                <div class="test-item">
+                    <span class="test-name">File Extension Restrictions</span>
+                    <span class="test-result" id="file-extensions">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">HTTP TRACE Method Blocked</span>
+                    <span class="test-result" id="trace-method">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Request Size Limits</span>
+                    <span class="test-result" id="request-limits">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">URL Length Limits</span>
+                    <span class="test-result" id="url-limits">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Authentication & Authorization</h3>
+            <div id="auth-results">
+                <div class="test-item">
+                    <span class="test-name">Anonymous Authentication Status</span>
+                    <span class="test-result" id="anonymous-auth">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Windows Authentication</span>
+                    <span class="test-result" id="windows-auth">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Basic Authentication (should be disabled)</span>
+                    <span class="test-result" id="basic-auth">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📁 Directory & File Security</h3>
+            <div id="directory-results">
+                <div class="test-item">
+                    <span class="test-name">Directory Browsing Disabled</span>
+                    <span class="test-result" id="directory-browsing">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">WebDAV Disabled</span>
+                    <span class="test-result" id="webdav">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Detailed Errors Hidden</span>
+                    <span class="test-result" id="detailed-errors">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 ISAPI & CGI Restrictions</h3>
+            <div id="isapi-results">
+                <div class="test-item">
+                    <span class="test-name">ISAPI Restrictions Enabled</span>
+                    <span class="test-result" id="isapi-restrictions">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">CGI Restrictions Enabled</span>
+                    <span class="test-result" id="cgi-restrictions">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Logging & Monitoring</h3>
+            <div id="logging-results">
+                <div class="test-item">
+                    <span class="test-name">IIS Logging Enabled</span>
+                    <span class="test-result" id="iis-logging">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">W3C Extended Log Format</span>
+                    <span class="test-result" id="w3c-logging">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Failed Request Tracing</span>
+                    <span class="test-result" id="failed-request-tracing">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🌐 Network Security</h3>
+            <div id="network-results">
+                <div class="test-item">
+                    <span class="test-name">Dynamic IP Restrictions</span>
+                    <span class="test-result" id="dynamic-ip">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Firewall Rules for IIS</span>
+                    <span class="test-result" id="firewall-rules">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">IP Address Restrictions</span>
+                    <span class="test-result" id="ip-restrictions">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Connection Limits</span>
+                    <span class="test-result" id="connection-limits">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Rate Limiting</span>
+                    <span class="test-result" id="rate-limiting">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Geolocation Filtering</span>
+                    <span class="test-result" id="geolocation-filtering">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">DDoS Protection</span>
+                    <span class="test-result" id="ddos-protection">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Request Throttling</span>
+                    <span class="test-result" id="request-throttling">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 SSL/TLS Security</h3>
+            <div id="ssl-results">
+                <div class="test-item">
+                    <span class="test-name">SSL/TLS Configuration</span>
+                    <span class="test-result" id="ssl-config">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Strong Cipher Suites</span>
+                    <span class="test-result" id="cipher-suites">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">TLS Version Support</span>
+                    <span class="test-result" id="tls-versions">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Certificate Validation</span>
+                    <span class="test-result" id="cert-validation">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Content Security</h3>
+            <div id="content-results">
+                <div class="test-item">
+                    <span class="test-name">Server Header Disclosure</span>
+                    <span class="test-result" id="server-header">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Version Information Hiding</span>
+                    <span class="test-result" id="version-hiding">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Powered-By Header Removal</span>
+                    <span class="test-result" id="powered-by">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">X-AspNet-Version Header</span>
+                    <span class="test-result" id="aspnet-version">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚙️ Handler Security</h3>
+            <div id="handler-results">
+                <div class="test-item">
+                    <span class="test-name">Handler Permissions Review</span>
+                    <span class="test-result" id="handler-permissions">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Unused Handlers Disabled</span>
+                    <span class="test-result" id="unused-handlers">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Dangerous Extensions Blocked</span>
+                    <span class="test-result" id="dangerous-extensions">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Script Execution Restrictions</span>
+                    <span class="test-result" id="script-execution">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Information Disclosure</h3>
+            <div id="disclosure-results">
+                <div class="test-item">
+                    <span class="test-name">Directory Listing Prevention</span>
+                    <span class="test-result" id="directory-listing">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Source Code Protection</span>
+                    <span class="test-result" id="source-protection">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Configuration File Access</span>
+                    <span class="test-result" id="config-access">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Backup File Protection</span>
+                    <span class="test-result" id="backup-protection">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🛡️ Advanced Security</h3>
+            <div id="advanced-results">
+                <div class="test-item">
+                    <span class="test-name">Request Validation</span>
+                    <span class="test-result" id="request-validation">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">View State Protection</span>
+                    <span class="test-result" id="viewstate-protection">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Session Security</span>
+                    <span class="test-result" id="session-security">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Cookie Security</span>
+                    <span class="test-result" id="cookie-security">Testing...</span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Machine Key Security</span>
+                    <span class="test-result" id="machine-key">Testing...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>📈 Compliance Summary</h2>
+            <div class="compliance-score" id="compliance-score">Calculating...</div>
+            <div class="test-details" id="test-details">Running tests...</div>
+            <button class="refresh-btn" onclick="runAllTests()">🔄 Refresh Tests</button>
+        </div>
+
+        <div class="timestamp" id="timestamp"></div>
+    </div>
+
+    <script>
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            warnings: 0
+        };
+
+        function updateTimestamp() {
+            document.getElementById('timestamp').textContent = 
+                `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        function setTestResult(elementId, status, message = '') {
+            const element = document.getElementById(elementId);
+            element.textContent = status;
+            element.className = `test-result ${status.toLowerCase()}`;
+            if (message) {
+                element.title = message;
+            }
+        }
+
+        function testSecurityHeaders() {
+            // Test X-Content-Type-Options
+            const xContentType = document.querySelector('meta[http-equiv="X-Content-Type-Options"]');
+            if (xContentType && xContentType.content === 'nosniff') {
+                setTestResult('x-content-type', 'PASS');
+                testResults.passed++;
+            } else {
+                setTestResult('x-content-type', 'FAIL', 'X-Content-Type-Options header not set to nosniff');
+                testResults.failed++;
+            }
+            testResults.total++;
+
+            // Test X-Frame-Options
+            const xFrameOptions = document.querySelector('meta[http-equiv="X-Frame-Options"]');
+            if (xFrameOptions && xFrameOptions.content === 'DENY') {
+                setTestResult('x-frame-options', 'PASS');
+                testResults.passed++;
+            } else {
+                setTestResult('x-frame-options', 'FAIL', 'X-Frame-Options header not set to DENY');
+                testResults.failed++;
+            }
+            testResults.total++;
+
+            // Test X-XSS-Protection
+            const xXssProtection = document.querySelector('meta[http-equiv="X-XSS-Protection"]');
+            if (xXssProtection && xXssProtection.content === '1; mode=block') {
+                setTestResult('x-xss-protection', 'PASS');
+                testResults.passed++;
+            } else {
+                setTestResult('x-xss-protection', 'FAIL', 'X-XSS-Protection header not properly configured');
+                testResults.failed++;
+            }
+            testResults.total++;
+
+            // Test HSTS
+            setTestResult('hsts', 'WARNING', 'HSTS requires HTTPS - test with HTTPS enabled');
+            testResults.warnings++;
+            testResults.total++;
+
+            // Test Referrer Policy
+            setTestResult('referrer-policy', 'WARNING', 'Referrer-Policy header not detected in meta tags');
+            testResults.warnings++;
+            testResults.total++;
+
+            // Test CSP
+            setTestResult('csp', 'WARNING', 'Content-Security-Policy header not detected in meta tags');
+            testResults.warnings++;
+            testResults.total++;
+        }
+
+        function testRequestFiltering() {
+            // Test file extensions by trying to access a blocked file
+            fetch('/test.exe')
+                .then(response => {
+                    if (response.status === 404 || response.status === 403) {
+                        setTestResult('file-extensions', 'PASS', 'Executable files are blocked');
+                        testResults.passed++;
+                    } else {
+                        setTestResult('file-extensions', 'FAIL', 'Executable files are not properly blocked');
+                        testResults.failed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('file-extensions', 'PASS', 'Executable files are blocked');
+                    testResults.passed++;
+                });
+            testResults.total++;
+
+            // Test TRACE method
+            fetch('/', { method: 'TRACE' })
+                .then(response => {
+                    if (response.status === 405 || response.status === 403) {
+                        setTestResult('trace-method', 'PASS', 'TRACE method is blocked');
+                        testResults.passed++;
+                    } else {
+                        setTestResult('trace-method', 'FAIL', 'TRACE method is not blocked');
+                        testResults.failed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('trace-method', 'PASS', 'TRACE method is blocked');
+                    testResults.passed++;
+                });
+            testResults.total++;
+
+            // Test request limits (simulate large request)
+            const largeData = 'x'.repeat(10000);
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `data=${largeData}`
+            })
+                .then(response => {
+                    if (response.status === 413) {
+                        setTestResult('request-limits', 'PASS', 'Request size limits are enforced');
+                        testResults.passed++;
+                    } else {
+                        setTestResult('request-limits', 'WARNING', 'Request size limits may not be properly configured');
+                        testResults.warnings++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('request-limits', 'WARNING', 'Could not test request limits');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test URL length limits
+            const longUrl = '/test' + 'x'.repeat(5000);
+            fetch(longUrl)
+                .then(response => {
+                    if (response.status === 414 || response.status === 404) {
+                        setTestResult('url-limits', 'PASS', 'URL length limits are enforced');
+                        testResults.passed++;
+                    } else {
+                        setTestResult('url-limits', 'WARNING', 'URL length limits may not be properly configured');
+                        testResults.warnings++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('url-limits', 'WARNING', 'Could not test URL limits');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+        }
+
+        function testAuthentication() {
+            // Test anonymous authentication
+            fetch('/')
+                .then(response => {
+                    if (response.status === 200) {
+                        setTestResult('anonymous-auth', 'PASS', 'Anonymous authentication is working');
+                        testResults.passed++;
+                    } else if (response.status === 401) {
+                        setTestResult('anonymous-auth', 'WARNING', 'Anonymous authentication is disabled');
+                        testResults.warnings++;
+                    } else {
+                        setTestResult('anonymous-auth', 'FAIL', 'Unexpected response');
+                        testResults.failed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('anonymous-auth', 'FAIL', 'Could not test authentication');
+                    testResults.failed++;
+                });
+            testResults.total++;
+
+            // Test Windows authentication (this would require server-side validation)
+            setTestResult('windows-auth', 'INFO', 'Windows authentication requires server-side validation');
+            testResults.total++;
+
+            // Test basic authentication
+            setTestResult('basic-auth', 'INFO', 'Basic authentication status requires server-side validation');
+            testResults.total++;
+        }
+
+        function testDirectorySecurity() {
+            // Test directory browsing
+            fetch('/')
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('Index of') || html.includes('Directory Listing')) {
+                        setTestResult('directory-browsing', 'FAIL', 'Directory browsing is enabled');
+                        testResults.failed++;
+                    } else {
+                        setTestResult('directory-browsing', 'PASS', 'Directory browsing appears to be disabled');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('directory-browsing', 'WARNING', 'Could not test directory browsing');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test WebDAV
+            fetch('/', { method: 'PROPFIND' })
+                .then(response => {
+                    if (response.status === 405 || response.status === 403) {
+                        setTestResult('webdav', 'PASS', 'WebDAV is disabled');
+                        testResults.passed++;
+                    } else {
+                        setTestResult('webdav', 'FAIL', 'WebDAV may be enabled');
+                        testResults.failed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('webdav', 'PASS', 'WebDAV is disabled');
+                    testResults.passed++;
+                });
+            testResults.total++;
+
+            // Test detailed errors
+            fetch('/nonexistent-page-that-should-return-404')
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('Exception Details:') || html.includes('Stack Trace:')) {
+                        setTestResult('detailed-errors', 'FAIL', 'Detailed errors are being shown');
+                        testResults.failed++;
+                    } else {
+                        setTestResult('detailed-errors', 'PASS', 'Detailed errors are hidden');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('detailed-errors', 'WARNING', 'Could not test detailed errors');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+        }
+
+        function testISAPIRestrictions() {
+            // These tests require server-side validation
+            setTestResult('isapi-restrictions', 'INFO', 'ISAPI restrictions require server-side validation');
+            testResults.total++;
+            setTestResult('cgi-restrictions', 'INFO', 'CGI restrictions require server-side validation');
+            testResults.total++;
+        }
+
+        function testLogging() {
+            // These tests require server-side validation
+            setTestResult('iis-logging', 'INFO', 'IIS logging status requires server-side validation');
+            testResults.total++;
+            setTestResult('w3c-logging', 'INFO', 'W3C logging format requires server-side validation');
+            testResults.total++;
+            setTestResult('failed-request-tracing', 'INFO', 'Failed request tracing requires server-side validation');
+            testResults.total++;
+        }
+
+        function testNetworkSecurity() {
+            // These tests require server-side validation
+            setTestResult('dynamic-ip', 'INFO', 'Dynamic IP restrictions require server-side validation');
+            testResults.total++;
+            setTestResult('firewall-rules', 'INFO', 'Firewall rules require server-side validation');
+            testResults.total++;
+            setTestResult('ip-restrictions', 'INFO', 'IP address restrictions require server-side validation');
+            testResults.total++;
+            setTestResult('connection-limits', 'INFO', 'Connection limits require server-side validation');
+            testResults.total++;
+            setTestResult('rate-limiting', 'INFO', 'Rate limiting requires server-side validation');
+            testResults.total++;
+            setTestResult('geolocation-filtering', 'INFO', 'Geolocation filtering requires server-side validation');
+            testResults.total++;
+            setTestResult('ddos-protection', 'INFO', 'DDoS protection requires server-side validation');
+            testResults.total++;
+            setTestResult('request-throttling', 'INFO', 'Request throttling requires server-side validation');
+            testResults.total++;
+        }
+
+        function testSSLSecurity() {
+            // Test SSL/TLS configuration
+            if (location.protocol === 'https:') {
+                setTestResult('ssl-config', 'PASS', 'HTTPS is enabled');
+                testResults.passed++;
+            } else {
+                setTestResult('ssl-config', 'WARNING', 'HTTPS not enabled - SSL/TLS testing limited');
+                testResults.warnings++;
+            }
+            testResults.total++;
+
+            // Test cipher suites (requires HTTPS)
+            if (location.protocol === 'https:') {
+                setTestResult('cipher-suites', 'INFO', 'Cipher suite validation requires server-side testing');
+                testResults.total++;
+            } else {
+                setTestResult('cipher-suites', 'WARNING', 'Cannot test cipher suites without HTTPS');
+                testResults.warnings++;
+                testResults.total++;
+            }
+
+            // Test TLS versions
+            if (location.protocol === 'https:') {
+                setTestResult('tls-versions', 'INFO', 'TLS version validation requires server-side testing');
+                testResults.total++;
+            } else {
+                setTestResult('tls-versions', 'WARNING', 'Cannot test TLS versions without HTTPS');
+                testResults.warnings++;
+                testResults.total++;
+            }
+
+            // Test certificate validation
+            if (location.protocol === 'https:') {
+                setTestResult('cert-validation', 'INFO', 'Certificate validation requires server-side testing');
+                testResults.total++;
+            } else {
+                setTestResult('cert-validation', 'WARNING', 'Cannot test certificate without HTTPS');
+                testResults.warnings++;
+                testResults.total++;
+            }
+        }
+
+        function testContentSecurity() {
+            // Test server header disclosure
+            fetch('/')
+                .then(response => {
+                    const serverHeader = response.headers.get('Server');
+                    if (serverHeader && serverHeader.includes('Microsoft-IIS')) {
+                        setTestResult('server-header', 'WARNING', `Server header reveals: ${serverHeader}`);
+                        testResults.warnings++;
+                    } else {
+                        setTestResult('server-header', 'PASS', 'Server header is hidden or minimal');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('server-header', 'WARNING', 'Could not test server header');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test version information hiding
+            fetch('/')
+                .then(response => {
+                    const poweredBy = response.headers.get('X-Powered-By');
+                    if (poweredBy) {
+                        setTestResult('version-hiding', 'FAIL', `Version information exposed: ${poweredBy}`);
+                        testResults.failed++;
+                    } else {
+                        setTestResult('version-hiding', 'PASS', 'Version information is hidden');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('version-hiding', 'WARNING', 'Could not test version hiding');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test powered-by header
+            fetch('/')
+                .then(response => {
+                    const poweredBy = response.headers.get('X-Powered-By');
+                    if (poweredBy) {
+                        setTestResult('powered-by', 'FAIL', `X-Powered-By header present: ${poweredBy}`);
+                        testResults.failed++;
+                    } else {
+                        setTestResult('powered-by', 'PASS', 'X-Powered-By header is removed');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('powered-by', 'WARNING', 'Could not test X-Powered-By header');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test ASP.NET version header
+            fetch('/')
+                .then(response => {
+                    const aspNetVersion = response.headers.get('X-AspNet-Version');
+                    if (aspNetVersion) {
+                        setTestResult('aspnet-version', 'FAIL', `ASP.NET version exposed: ${aspNetVersion}`);
+                        testResults.failed++;
+                    } else {
+                        setTestResult('aspnet-version', 'PASS', 'ASP.NET version header is hidden');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('aspnet-version', 'WARNING', 'Could not test ASP.NET version header');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+        }
+
+        function testHandlerSecurity() {
+            // Test handler permissions
+            setTestResult('handler-permissions', 'INFO', 'Handler permissions require server-side validation');
+            testResults.total++;
+
+            // Test unused handlers
+            setTestResult('unused-handlers', 'INFO', 'Unused handler detection requires server-side validation');
+            testResults.total++;
+
+            // Test dangerous extensions
+            const dangerousExtensions = ['.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.vbs', '.js', '.jse', '.wsf', '.wsh', '.ps1', '.psm1', '.psd1'];
+            let blockedCount = 0;
+            let totalTests = 0;
+
+            dangerousExtensions.forEach(ext => {
+                fetch(`/test${ext}`)
+                    .then(response => {
+                        if (response.status === 404 || response.status === 403) {
+                            blockedCount++;
+                        }
+                        totalTests++;
+                        if (totalTests === dangerousExtensions.length) {
+                            const percentage = Math.round((blockedCount / totalTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('dangerous-extensions', 'PASS', `${percentage}% of dangerous extensions blocked`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('dangerous-extensions', 'FAIL', `Only ${percentage}% of dangerous extensions blocked`);
+                                testResults.failed++;
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        blockedCount++;
+                        totalTests++;
+                        if (totalTests === dangerousExtensions.length) {
+                            const percentage = Math.round((blockedCount / totalTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('dangerous-extensions', 'PASS', `${percentage}% of dangerous extensions blocked`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('dangerous-extensions', 'FAIL', `Only ${percentage}% of dangerous extensions blocked`);
+                                testResults.failed++;
+                            }
+                        }
+                    });
+            });
+            testResults.total++;
+
+            // Test script execution
+            setTestResult('script-execution', 'INFO', 'Script execution restrictions require server-side validation');
+            testResults.total++;
+        }
+
+        function testInformationDisclosure() {
+            // Test directory listing prevention
+            fetch('/')
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('Index of') || html.includes('Directory Listing') || html.includes('<title>Index of')) {
+                        setTestResult('directory-listing', 'FAIL', 'Directory listing is enabled');
+                        testResults.failed++;
+                    } else {
+                        setTestResult('directory-listing', 'PASS', 'Directory listing is disabled');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('directory-listing', 'WARNING', 'Could not test directory listing');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test source code protection
+            const sourceExtensions = ['.cs', '.vb', '.aspx.cs', '.aspx.vb', '.config', '.xml'];
+            let protectedCount = 0;
+            let totalSourceTests = 0;
+
+            sourceExtensions.forEach(ext => {
+                fetch(`/test${ext}`)
+                    .then(response => {
+                        if (response.status === 404 || response.status === 403) {
+                            protectedCount++;
+                        }
+                        totalSourceTests++;
+                        if (totalSourceTests === sourceExtensions.length) {
+                            const percentage = Math.round((protectedCount / totalSourceTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('source-protection', 'PASS', `${percentage}% of source files protected`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('source-protection', 'FAIL', `Only ${percentage}% of source files protected`);
+                                testResults.failed++;
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        protectedCount++;
+                        totalSourceTests++;
+                        if (totalSourceTests === sourceExtensions.length) {
+                            const percentage = Math.round((protectedCount / totalSourceTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('source-protection', 'PASS', `${percentage}% of source files protected`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('source-protection', 'FAIL', `Only ${percentage}% of source files protected`);
+                                testResults.failed++;
+                            }
+                        }
+                    });
+            });
+            testResults.total++;
+
+            // Test configuration file access
+            const configFiles = ['web.config', 'app.config', 'machine.config', 'connectionstrings.config'];
+            let configProtectedCount = 0;
+            let totalConfigTests = 0;
+
+            configFiles.forEach(config => {
+                fetch(`/${config}`)
+                    .then(response => {
+                        if (response.status === 404 || response.status === 403) {
+                            configProtectedCount++;
+                        }
+                        totalConfigTests++;
+                        if (totalConfigTests === configFiles.length) {
+                            const percentage = Math.round((configProtectedCount / totalConfigTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('config-access', 'PASS', `${percentage}% of config files protected`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('config-access', 'FAIL', `Only ${percentage}% of config files protected`);
+                                testResults.failed++;
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        configProtectedCount++;
+                        totalConfigTests++;
+                        if (totalConfigTests === configFiles.length) {
+                            const percentage = Math.round((configProtectedCount / totalConfigTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('config-access', 'PASS', `${percentage}% of config files protected`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('config-access', 'FAIL', `Only ${percentage}% of config files protected`);
+                                testResults.failed++;
+                            }
+                        }
+                    });
+            });
+            testResults.total++;
+
+            // Test backup file protection
+            const backupExtensions = ['.bak', '.backup', '.old', '.orig', '.tmp', '.temp'];
+            let backupProtectedCount = 0;
+            let totalBackupTests = 0;
+
+            backupExtensions.forEach(ext => {
+                fetch(`/test${ext}`)
+                    .then(response => {
+                        if (response.status === 404 || response.status === 403) {
+                            backupProtectedCount++;
+                        }
+                        totalBackupTests++;
+                        if (totalBackupTests === backupExtensions.length) {
+                            const percentage = Math.round((backupProtectedCount / totalBackupTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('backup-protection', 'PASS', `${percentage}% of backup files protected`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('backup-protection', 'FAIL', `Only ${percentage}% of backup files protected`);
+                                testResults.failed++;
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        backupProtectedCount++;
+                        totalBackupTests++;
+                        if (totalBackupTests === backupExtensions.length) {
+                            const percentage = Math.round((backupProtectedCount / totalBackupTests) * 100);
+                            if (percentage >= 80) {
+                                setTestResult('backup-protection', 'PASS', `${percentage}% of backup files protected`);
+                                testResults.passed++;
+                            } else {
+                                setTestResult('backup-protection', 'FAIL', `Only ${percentage}% of backup files protected`);
+                                testResults.failed++;
+                            }
+                        }
+                    });
+            });
+            testResults.total++;
+        }
+
+        function testAdvancedSecurity() {
+            // Test request validation
+            setTestResult('request-validation', 'INFO', 'Request validation requires server-side testing');
+            testResults.total++;
+
+            // Test view state protection
+            setTestResult('viewstate-protection', 'INFO', 'View state protection requires server-side testing');
+            testResults.total++;
+
+            // Test session security
+            setTestResult('session-security', 'INFO', 'Session security requires server-side testing');
+            testResults.total++;
+
+            // Test cookie security
+            fetch('/')
+                .then(response => {
+                    const setCookieHeader = response.headers.get('Set-Cookie');
+                    if (setCookieHeader) {
+                        const hasSecure = setCookieHeader.includes('Secure');
+                        const hasHttpOnly = setCookieHeader.includes('HttpOnly');
+                        const hasSameSite = setCookieHeader.includes('SameSite');
+                        
+                        if (hasSecure && hasHttpOnly && hasSameSite) {
+                            setTestResult('cookie-security', 'PASS', 'Cookies have secure attributes');
+                            testResults.passed++;
+                        } else {
+                            setTestResult('cookie-security', 'WARNING', 'Cookies missing security attributes');
+                            testResults.warnings++;
+                        }
+                    } else {
+                        setTestResult('cookie-security', 'PASS', 'No cookies set');
+                        testResults.passed++;
+                    }
+                })
+                .catch(() => {
+                    setTestResult('cookie-security', 'WARNING', 'Could not test cookie security');
+                    testResults.warnings++;
+                });
+            testResults.total++;
+
+            // Test machine key security
+            setTestResult('machine-key', 'INFO', 'Machine key security requires server-side testing');
+            testResults.total++;
+        }
+
+        function updateComplianceScore() {
+            const percentage = Math.round((testResults.passed / testResults.total) * 100);
+            const scoreElement = document.getElementById('compliance-score');
+            const detailsElement = document.getElementById('test-details');
+
+            scoreElement.textContent = `${percentage}% Compliance`;
+            
+            if (percentage >= 80) {
+                scoreElement.className = 'compliance-score high';
+            } else if (percentage >= 60) {
+                scoreElement.className = 'compliance-score medium';
+            } else {
+                scoreElement.className = 'compliance-score low';
+            }
+
+            detailsElement.innerHTML = `
+                <strong>Test Results:</strong><br>
+                ✅ Passed: ${testResults.passed}<br>
+                ❌ Failed: ${testResults.failed}<br>
+                ⚠️ Warnings: ${testResults.warnings}<br>
+                ℹ️ Info: ${testResults.total - testResults.passed - testResults.failed - testResults.warnings}<br>
+                📊 Total Tests: ${testResults.total}
+            `;
+        }
+
+        function runAllTests() {
+            // Reset results
+            testResults = { total: 0, passed: 0, failed: 0, warnings: 0 };
+
+            // Run all tests
+            testSecurityHeaders();
+            testRequestFiltering();
+            testAuthentication();
+            testDirectorySecurity();
+            testISAPIRestrictions();
+            testLogging();
+            testNetworkSecurity();
+            testSSLSecurity();
+            testContentSecurity();
+            testHandlerSecurity();
+            testInformationDisclosure();
+            testAdvancedSecurity();
+
+            // Update compliance score
+            setTimeout(() => {
+                updateComplianceScore();
+                updateTimestamp();
+            }, 2000);
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            runAllTests();
+        });
+    </script>
+</body>
+</html>

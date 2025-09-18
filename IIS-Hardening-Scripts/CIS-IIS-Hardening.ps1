@@ -511,12 +511,22 @@ function Set-IISCookieSecurity {
     
     if (-not $WhatIf) {
         try {
-            # CIS Level 1: Configure secure cookie attributes
-            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpCookies /httpOnlyCookies:true /commit:apphost
-            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpCookies /requireSSL:true /commit:apphost
-            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpCookies /sameSite:"Strict" /commit:apphost
+            # CIS Level 1: Configure secure cookie attributes via web.config for default site
+            # Note: system.web sections must be applied to individual sites, not globally
+            $WebConfigPath = "C:\inetpub\wwwroot\web.config"
             
-            Write-Log "Cookie security configured successfully" "INFO"
+            # Create or update web.config with cookie security settings
+            $WebConfigContent = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.web>
+        <httpCookies httpOnlyCookies="true" requireSSL="true" sameSite="Strict" />
+    </system.web>
+</configuration>
+"@
+            
+            $WebConfigContent | Out-File -FilePath $WebConfigPath -Encoding UTF8 -Force
+            Write-Log "Cookie security configured successfully via web.config" "INFO"
         }
         catch {
             Write-Log "Failed to configure cookie security: $($_.Exception.Message)" "ERROR"
@@ -532,11 +542,39 @@ function Set-IISRequestValidation {
     
     if (-not $WhatIf) {
         try {
-            # CIS Level 1: Enable request validation
-            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/pages /validateRequest:true /commit:apphost
-            & "$env:SystemRoot\System32\inetsrv\appcmd.exe" set config -section:system.web/httpRuntime /requestValidationMode:"4.5" /commit:apphost
+            # CIS Level 1: Enable request validation via web.config for default site
+            # Note: system.web sections must be applied to individual sites, not globally
+            $WebConfigPath = "C:\inetpub\wwwroot\web.config"
             
-            Write-Log "Request validation configured successfully" "INFO"
+            # Read existing web.config or create new one
+            if (Test-Path $WebConfigPath) {
+                [xml]$WebConfig = Get-Content $WebConfigPath
+            } else {
+                [xml]$WebConfig = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.web>
+    </system.web>
+</configuration>
+"@
+            }
+            
+            # Add or update request validation settings
+            if (-not $WebConfig.configuration.'system.web'.pages) {
+                $pagesNode = $WebConfig.CreateElement("pages")
+                $WebConfig.configuration.'system.web'.AppendChild($pagesNode) | Out-Null
+            }
+            $WebConfig.configuration.'system.web'.pages.SetAttribute("validateRequest", "true")
+            
+            if (-not $WebConfig.configuration.'system.web'.httpRuntime) {
+                $httpRuntimeNode = $WebConfig.CreateElement("httpRuntime")
+                $WebConfig.configuration.'system.web'.AppendChild($httpRuntimeNode) | Out-Null
+            }
+            $WebConfig.configuration.'system.web'.httpRuntime.SetAttribute("requestValidationMode", "4.5")
+            
+            # Save the updated web.config
+            $WebConfig.Save($WebConfigPath)
+            Write-Log "Request validation configured successfully via web.config" "INFO"
         }
         catch {
             Write-Log "Failed to configure request validation: $($_.Exception.Message)" "ERROR"
